@@ -1,20 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Feedback Response</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Feedback Response</h1>
     <p><strong>Feedback from:</strong> {{ feedback.name }}</p>
     <p><strong>Message:</strong> {{ feedback.message }}</p>
 
-    <hr>
-    <form action="{% url 'feedback_response_create' feedback.pk %}" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit Response</button>
+    <hr />
+    <form
+      action="{% url 'feedback_response_create' feedback.pk %}"
+      method="post"
+    >
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Submit Response</button>
     </form>
-</body>
+    <p>
+      <i
+        >Only mark the resolve if you the feedback is resolved successfully,
+        leave it for status reviewed.</i
+      >
+    </p>
+  </body>
 </html>

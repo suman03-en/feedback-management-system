@@ -6,7 +6,8 @@
     <title>{% block title %} List of feedbacks. {% endblock title %}</title>
   </head>
   <body>
-    <h1>List of Feedbacks</h1>
+    <h3><a href="{% url "feedback_create" %}">Create New Feedback</a></h3>
+    <h1>List of Feedbacks</h1> 
     <i>Author: {{ author }}</i>
     {% for feedback in feedbacks %}
     <a href="{% url "feedback_detail" feedback.pk %}"><p>counter: {{ forloop.counter }} - {{ feedback.name }}</p>

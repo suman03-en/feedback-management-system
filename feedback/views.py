@@ -5,7 +5,7 @@ from .forms import (
     FeedbackForm,
     FeedbackResponseForm,
 )
-from datetime import datetime
+from .mixins import FeedbackMixin
 
 
 class FeedbackListView(ListView):
@@ -62,3 +62,17 @@ class FeedbackResponseCreateView(CreateView):
         kwargs = super().get_form_kwargs()
         kwargs["feedback"] = self.get_feedback()
         return kwargs
+    
+class FeedbackResponseListView(FeedbackMixin, ListView):
+    model = FeedbackResponse
+    template_name = "feedback/feedback_response_list.html"
+    context_object_name = "responses"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["feedback"] = self.get_feedback()
+        return context
+    
+    def get_queryset(self):
+        feedback_id = self.kwargs.get("pk")
+        return FeedbackResponse.objects.filter(feedback__id=feedback_id).order_by("-created_at")

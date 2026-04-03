@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Response List</title>
+</head>
+<body>
+    <h1>Responses for Feedback: {{ feedback.name }}</h1>
+    {% for response in responses %}
+        <div>
+            <p><strong>Responder Name:</strong> {{ response.responder_name }}</p>
+            <p><strong>Message:</strong> {{ response.responder_message }}</p>
+            <p><i>Created at: {{ response.created_at }}</i></p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No responses yet.</p>
+    {% endfor %}
+</body>
+</html>
