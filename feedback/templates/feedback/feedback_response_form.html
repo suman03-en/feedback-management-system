@@ -1,4 +1,5 @@
-{% extends "feedback/base.html" %} {% block title %}Respond to Feedback{%endblock title %} {% block content %}
+{% extends "feedback/base.html" %} {% block title %}Respond to Feedback{%endblock title %} 
+{% block content %}
 <section class="detail-layout">
   <article class="card form-card">
     <div class="form-header">
@@ -21,9 +22,9 @@
     </div>
 
     <form
-      action="{% url 'feedback_response_create' feedback.pk %}"
-      method="post"
-    >
+      action="{% if feedbackresponse %}
+      {% url 'feedback_response_edit' feedbackresponse.pk %}{% else %}
+      {% url 'feedback_response_create' feedback.pk %}{% endif %}" method="post">
       {% csrf_token %} {{ form.as_p }}
       <div class="form-help">
         Mark the item as resolved only when the issue is fully closed. Otherwise

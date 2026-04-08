@@ -13,7 +13,7 @@ class Feedback(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     message = models.TextField()
     status = models.CharField(max_length=20, choices=status_choices, default="pending")
@@ -22,12 +22,6 @@ class Feedback(models.Model):
         "Department", through="FeedbackDepartment", related_name="feedbacks"
     )
     is_anonymous = models.BooleanField(default=False)
-
-    def save(self, *args, **kwargs):
-        if self.is_anonymous:
-            self.name = "Anonymous"
-            self.email = ""
-        super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse("feedback_detail", kwargs={"pk": self.pk})
@@ -39,6 +33,7 @@ class Feedback(models.Model):
 class Department(models.Model):
     """Model representing a department."""
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
 
@@ -65,6 +60,7 @@ class FeedbackDepartment(models.Model):
 class FeedbackResponse(models.Model):
     """Model representing a response to feedback."""
 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     feedback = models.ForeignKey(
         Feedback, on_delete=models.CASCADE, related_name="responses"
     )

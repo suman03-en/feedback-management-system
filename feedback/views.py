@@ -1,7 +1,13 @@
-from django.views.generic import ListView, DetailView, CreateView, DeleteView
-from django.urls import reverse_lazy
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    DeleteView,
+    UpdateView,
+)
+from django.urls import reverse_lazy, reverse
 from .models import (
-    Feedback, 
+    Feedback,
     FeedbackResponse,
 )
 from .forms import (
@@ -65,7 +71,8 @@ class FeedbackResponseCreateView(CreateView):
         kwargs = super().get_form_kwargs()
         kwargs["feedback"] = self.get_feedback()
         return kwargs
-    
+
+
 class FeedbackResponseListView(FeedbackMixin, ListView):
     model = FeedbackResponse
     template_name = "feedback/feedback_response_list.html"
@@ -75,8 +82,35 @@ class FeedbackResponseListView(FeedbackMixin, ListView):
         context = super().get_context_data(**kwargs)
         context["feedback"] = self.get_feedback()
         return context
-    
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["feedback"] = self.get_feedback()
+        return kwargs
+
     def get_queryset(self):
         feedback_id = self.kwargs.get("pk")
-        return FeedbackResponse.objects.filter(feedback__id=feedback_id).order_by("-created_at")
-    
+        return FeedbackResponse.objects.filter(feedback__id=feedback_id).order_by(
+            "-created_at"
+        )
+
+
+class FeedbackResponseEditView(UpdateView):
+    model = FeedbackResponse
+    template_name = "feedback/feedback_response_form.html"
+    form_class = FeedbackResponseForm
+    pk_url_kwarg = "pk"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["feedback"] = self.object.feedback
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("feedback_response_list", kwargs={"pk": self.object.feedback.pk})
+
+
+class FeedbackResponseDeleteView(DeleteView):
+    model = FeedbackResponse
+    template_name = "feedback/feedback_response_confirm_delete.html"
+    success_url = reverse_lazy("feedback_list")

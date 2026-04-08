@@ -5,6 +5,8 @@ from .views import (
     FeedbackCreateView,
     FeedbackDeleteView,
     FeedbackResponseCreateView,
+    FeedbackResponseEditView,
+    FeedbackResponseDeleteView,
     FeedbackResponseListView,
 )
 
@@ -20,8 +22,19 @@ urlpatterns = [
         name="feedback_response_create",
     ),
     path(
+        "response/<uuid:pk>/edit/",
+        FeedbackResponseEditView.as_view(),
+        name="feedback_response_edit",
+    ),
+    path(
         "<uuid:pk>/responses/",
         FeedbackResponseListView.as_view(),
         name="feedback_response_list",
     ),
+    path(
+        "response/<uuid:pk>/delete/",
+        FeedbackResponseDeleteView.as_view(),
+        name="feedback_response_delete",
+    )
+
 ]
