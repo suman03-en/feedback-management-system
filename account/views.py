@@ -1,7 +1,7 @@
 from django.views import View
 from django.shortcuts import render, redirect, HttpResponse
 from .forms import UserRegistrationForm, UserLoginForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 class UserRegisterView(View):
     form_class = UserRegistrationForm
@@ -31,6 +31,9 @@ class UserLoginView(View):
         return render(request, self.template_name, {"form": self.get_form()})
     
     def post(self, request):
+        if request.user.is_authenticated:
+            return HttpResponse("User is already logged in")
+        
         form = self.get_form(request.POST)
         if form.is_valid():
             email = form.cleaned_data.get("email")
@@ -42,3 +45,10 @@ class UserLoginView(View):
             else:
                 form.add_error(None, "Invalid email or password")
         return render(request, self.template_name, {"form": form})
+    
+class UserLogoutView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return HttpResponse("User is not logged in")
+        logout(request)
+        return HttpResponse("User logged out successfully")
