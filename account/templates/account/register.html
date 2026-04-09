@@ -1,0 +1,45 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account</title>
+    <link rel="stylesheet" href="{% static 'account/register.css' %}" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="card" aria-labelledby="register-title">
+        <header class="card-header">
+          <h1 id="register-title">Create your account</h1>
+          <p>Join the feedback platform to submit and manage responses.</p>
+        </header>
+
+        <form method="post" class="register-form" novalidate>
+          {% csrf_token %} {% if form.non_field_errors %}
+          <div class="form-alert" role="alert">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %} {% for field in form %}
+          <div class="form-group {% if field.errors %}has-error{% endif %}">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }} {% if field.help_text %}
+            <small class="help-text">{{ field.help_text }}</small>
+            {% endif %} {% if field.errors %}
+            <div class="field-errors">
+              {% for error in field.errors %}
+              <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+          <button type="submit" class="submit-btn">Create account</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
