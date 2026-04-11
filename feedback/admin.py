@@ -3,8 +3,8 @@ from .models import Feedback, FeedbackResponse, Department
 
 
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ("name", "email", "message", "created_at")
-    search_fields = ("name", "email", "message")
+    list_display = ("creator", "email", "message", "created_at")
+    search_fields = ("creator", "email", "message")
     list_filter = ("created_at",)
 
 

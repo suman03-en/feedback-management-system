@@ -8,9 +8,9 @@ from .views import (
     FeedbackResponseEditView,
     FeedbackResponseDeleteView,
     FeedbackResponseListView,
-    FeedbackResponseAssignView
+    FeedbackResponseAssignView,
+    DepartmentCreateView,
 )
-
 
 
 urlpatterns = [
@@ -44,5 +44,10 @@ urlpatterns = [
         FeedbackResponseAssignView.as_view(),
         name="feedback_responder_assign",
     ),
-
+    # additional url for department create view
+    path(
+        "department/create/",
+        DepartmentCreateView.as_view(),
+        name="department_create",
+    ),
 ]

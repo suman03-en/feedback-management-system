@@ -13,13 +13,11 @@ class FeedbackForm(forms.ModelForm):
         exclude = [
             "status",
             "created_at",
+            "creator",
         ]
 
     def clean(self):
         cleaned_data = super().clean()
-        if cleaned_data.get("is_anonymous"):
-            cleaned_data["name"] = "Anonymous"
-            cleaned_data["email"] = ""
         return cleaned_data
 
     def save(self, commit=...):

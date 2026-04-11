@@ -23,6 +23,12 @@
         <div>
           <p class="eyebrow">Feedback management system</p>
           <h1>Feedback Hub</h1>
+          {% if request.user.is_staff %}
+            <a class="button button-secondary" href="{% url 'department_create' %}">Add Department</a>
+          {% endif %}
+          <div>
+            <p style="margin: 0; color: #7d7b7b;">Welcome, {{ user.name }}!</p>
+          </div>
         </div>
         <a class="button button-primary" href="{% url 'feedback_create' %}"
           >New feedback</a

@@ -14,7 +14,11 @@ class Feedback(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100, blank=True, null=True)
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="created_feedbacks",
+    )
     email = models.EmailField(blank=True, null=True)
     message = models.TextField()
     status = models.CharField(max_length=20, choices=status_choices, default="pending")
@@ -22,13 +26,12 @@ class Feedback(models.Model):
     to_departments = models.ManyToManyField(
         "Department", through="FeedbackDepartment", related_name="feedbacks"
     )
-    is_anonymous = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse("feedback_detail", kwargs={"pk": self.pk})
 
     def __str__(self):
-        return f"{self.name} - {self.message[:20]}..."
+        return f"{self.creator} - {self.message[:20]}..."
 
     def assign_to_responder(self, responder):
         """Assign this feedback to a responder."""
@@ -62,7 +65,7 @@ class FeedbackDepartment(models.Model):
     )
 
     def __str__(self):
-        return f"{self.feedback.name} - {self.department.name}"
+        return f"{self.feedback.creator} - {self.department.name}"
 
 
 class FeedbackResponderRecord(models.Model):
@@ -105,4 +108,4 @@ class FeedbackResponse(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Response to {self.feedback.name} by {', '.join(str(user) for user in self.responder.all())}"
+        return f"Response to {self.feedback.creator} by {', '.join(str(user) for user in self.responder.all())}"

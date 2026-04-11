@@ -10,10 +10,13 @@ from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
+from django.db.models import Q
+
 from .models import (
     Feedback,
     FeedbackResponse,
     FeedbackResponderRecord,
+    Department,
 )
 from .forms import (
     FeedbackForm,
@@ -33,21 +36,26 @@ def user_can_manage_feedback(feedback, user):
     return feedback.to_departments.filter(name=user.department).exists()
 
 
-class FeedbackListView(ListView):
+class FeedbackListView(LoginRequiredMixin, ListView):
     model = Feedback
     template_name = "feedback/feedback_list.html"
     context_object_name = "feedbacks"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["author"] = "Suman"
-        return context
-
     def get_queryset(self):
-        return Feedback.objects.order_by("-created_at")
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            return Feedback.objects.all().order_by("-created_at")
+        elif FeedbackResponderRecord.objects.filter(
+            feedback__in=Feedback.objects.all(),
+            responder=self.request.user
+        ).exists():
+            return Feedback.objects.filter(
+                Q(creator=self.request.user) |
+                Q(feedbackresponderrecord__responder=self.request.user)
+            ).distinct().order_by("-created_at")
+        return Feedback.objects.filter(creator=self.request.user).order_by("-created_at")
 
 
-class FeedbackDetailView(DetailView):
+class FeedbackDetailView(LoginRequiredMixin, DetailView):
     model = Feedback
     template_name = "feedback/feedback_detail.html"
     context_object_name = "feedback"
@@ -66,10 +74,14 @@ class FeedbackDetailView(DetailView):
         return context
 
 
-class FeedbackCreateView(CreateView):
+class FeedbackCreateView(LoginRequiredMixin, CreateView):
     model = Feedback
     template_name = "feedback/feedback_form.html"
     form_class = FeedbackForm
+
+    def form_valid(self, form):
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
 class FeedbackDeleteView(DeleteView):
@@ -116,7 +128,7 @@ class FeedbackResponseCreateView(LoginRequiredMixin, CreateView):
         return redirect(self.get_success_url())
 
 
-class FeedbackResponseListView(FeedbackMixin, ListView):
+class FeedbackResponseListView(LoginRequiredMixin, FeedbackMixin, ListView):
     model = FeedbackResponse
     template_name = "feedback/feedback_response_list.html"
     context_object_name = "responses"
@@ -138,7 +150,7 @@ class FeedbackResponseListView(FeedbackMixin, ListView):
         )
 
 
-class FeedbackResponseEditView(UpdateView):
+class FeedbackResponseEditView(LoginRequiredMixin, UpdateView):
     model = FeedbackResponse
     template_name = "feedback/feedback_response_form.html"
     form_class = FeedbackResponseForm
@@ -153,7 +165,7 @@ class FeedbackResponseEditView(UpdateView):
         return reverse("feedback_response_list", kwargs={"pk": self.object.feedback.pk})
 
 
-class FeedbackResponseDeleteView(DeleteView):
+class FeedbackResponseDeleteView(LoginRequiredMixin, DeleteView):
     model = FeedbackResponse
     template_name = "feedback/feedback_response_confirm_delete.html"
     success_url = reverse_lazy("feedback_list")
@@ -191,3 +203,18 @@ class FeedbackResponseAssignView(LoginRequiredMixin, View):
             self.template_name,
             {"form": form, "feedback": self.feedback},
         )
+    
+
+#additinal view to add the department , only allowed to superuser and staff user
+class DepartmentCreateView(LoginRequiredMixin, CreateView):
+    model = Department
+    template_name = "feedback/department_form.html"
+    fields = ["name", "description"]
+    success_url = reverse_lazy("feedback_list")
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not (request.user.is_superuser or request.user.is_staff):
+            raise PermissionDenied("You do not have permission to add a department.")
+        return super().dispatch(request, *args, **kwargs)

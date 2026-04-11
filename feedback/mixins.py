@@ -8,3 +8,6 @@ class FeedbackMixin:
         """Helper method to retrieve the associated feedback based on the URL parameter."""
 
         return Feedback.objects.get(id=self.kwargs.get("pk"))
+    
+
+

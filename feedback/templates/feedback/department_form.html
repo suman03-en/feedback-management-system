@@ -1,0 +1,12 @@
+{% extends "feedback/base.html" %}
+
+{% block title %}Add Department{% endblock title %}
+
+{% block content %}
+    <h2>Add Department</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Department</button>
+    </form>
+{% endblock content %}
