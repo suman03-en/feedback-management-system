@@ -3,7 +3,7 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
 from django.contrib.auth.models import AbstractUser
-
+from feedback.models import Department
 
 class UserManager(BaseUserManager):
     """
@@ -42,10 +42,10 @@ class User(AbstractUser):
     first_name = last_name = username = None
     name = models.CharField(max_length=100)
     email = models.EmailField(_("email address"), unique=True)
-    department = models.CharField(max_length=100)
+    department = models.ForeignKey(Department, on_delete=models.PROTECT, related_name="users", null=True, blank=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["name", "department"]
+    REQUIRED_FIELDS = ["name"]
 
     objects = UserManager()
 
