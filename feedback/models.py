@@ -39,6 +39,12 @@ class Feedback(models.Model):
             feedback=self, responder=responder
         )
         return record, created
+    
+    class Meta:
+        permissions = [
+            ("assign_feedback", "Can assign feedback to responders"),
+            ("revoke_responder", "Can revoke responder assignment from feedback"),
+        ]
 
 
 class Department(models.Model):
