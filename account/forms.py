@@ -1,5 +1,7 @@
 from django import forms
+from django.contrib.auth.models import Group
 from .models import User
+
 
 class UserRegistrationForm(forms.ModelForm):
     password1 = forms.CharField(label="Password", widget=forms.PasswordInput)
@@ -15,17 +17,19 @@ class UserRegistrationForm(forms.ModelForm):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords don't match")
         return password2
-    
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+        
+        # Assign default Employee role after user is saved to database.
         if commit:
             user.save()
+            employee_group, _ = Group.objects.get_or_create(name="Employee")
+            user.groups.add(employee_group)
         return user
-    
+
+
 class UserLoginForm(forms.Form):
     email = forms.EmailField(label="Email")
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
-
-
-    

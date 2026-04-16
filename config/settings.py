@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     # local apps
     "account",
     "feedback",
+
+    "guardian",
 ]
 
 MIDDLEWARE = [
@@ -102,6 +104,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = "account.User"
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # this is default
+    'guardian.backends.ObjectPermissionBackend',
+)
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 

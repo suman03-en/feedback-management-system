@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-
+from .permissions import assign_many_perms
 
 class Feedback(models.Model):
     """Model representing user feedback."""
@@ -38,6 +38,9 @@ class Feedback(models.Model):
         record, created = FeedbackResponderRecord.objects.get_or_create(
             feedback=self, responder=responder
         )
+        #assign view permission to the responder for this feedback
+        if created:
+            assign_many_perms(["feedback.view_feedback", "feedback.add_feedbackresponse", "feedback.change_feedbackresponse", "feedback.view_feedbackresponse"], responder, self)
         return record, created
     
     class Meta:

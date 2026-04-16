@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect, HttpResponse
 from .forms import UserRegistrationForm, UserLoginForm
 from django.contrib.auth import authenticate, login, logout
 
+
 class UserRegisterView(View):
     form_class = UserRegistrationForm
     template_name = "account/register.html"
@@ -17,9 +18,10 @@ class UserRegisterView(View):
         form = self.get_form(request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponse("User registered successfully")
+            return redirect("user_login")
         return render(request, self.template_name, {"form": form})
-    
+
+
 class UserLoginView(View):
     form_class = UserLoginForm
     template_name = "account/login.html"
@@ -29,13 +31,13 @@ class UserLoginView(View):
 
     def get(self, request):
         return render(request, self.template_name, {"form": self.get_form()})
-    
+
     def post(self, request):
         if request.user.is_authenticated:
             return HttpResponse("User is already logged in")
-        
+
         next_url = request.GET.get("next")
-        
+
         form = self.get_form(request.POST)
         if form.is_valid():
             email = form.cleaned_data.get("email")
@@ -47,7 +49,8 @@ class UserLoginView(View):
             else:
                 form.add_error(None, "Invalid email or password")
         return render(request, self.template_name, {"form": form})
-    
+
+
 class UserLogoutView(View):
     def post(self, request):
         if not request.user.is_authenticated:

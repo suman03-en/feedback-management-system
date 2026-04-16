@@ -14,6 +14,7 @@ class FeedbackForm(forms.ModelForm):
             "status",
             "created_at",
             "creator",
+            "email",
         ]
 
     def clean(self):
@@ -58,19 +59,6 @@ class FeedbackResponseAssignForm(forms.Form):
     """Form for assigning feedback to a responder."""
 
     responder = forms.ModelChoiceField(
-        queryset=User.objects.none(),
+        queryset=User.objects.filter(is_active=True),
         label="Assign to",
     )
-
-    def __init__(self, *args, feedback=None, assigner=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        queryset = User.objects.filter(is_active=True)
-
-        if feedback is not None:
-            department_names = feedback.to_departments.values_list("name", flat=True)
-            queryset = queryset.filter(department__in=department_names)
-
-        if assigner is not None and getattr(assigner, "is_staff", False):
-            queryset = queryset.exclude(pk=assigner.pk)
-
-        self.fields["responder"].queryset = queryset.distinct()

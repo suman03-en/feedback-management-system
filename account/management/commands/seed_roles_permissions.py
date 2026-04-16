@@ -10,6 +10,7 @@ ROLE_PERMISSIONS = {
         ("feedback", "feedback", "view_feedback"),
     ],
     "Responder": [
+        ("feedback", "feedback", "view_feedback"),
         ("feedback", "feedbackresponse", "add_feedbackresponse"),
         ("feedback", "feedbackresponse", "view_feedbackresponse"),
         ("feedback", "feedbackresponse", "change_feedbackresponse"),
