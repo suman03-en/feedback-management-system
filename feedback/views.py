@@ -11,7 +11,7 @@ from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 
-from guardian.shortcuts import get_objects_for_user
+from guardian.shortcuts import get_objects_for_user, assign_perm
 
 from .models import (
     Feedback,
@@ -78,7 +78,13 @@ class FeedbackCreateView(LoginRequiredMixin, CreateView):
         form.instance.creator = self.request.user
         form.instance.email = self.request.user.email
         response = super().form_valid(form)
+
+        #user who created the feedback should have view permission to it
         assign_owner_perms(self.request.user, self.object)
+
+        #department managers of the routed departments should have view permission to this feedback 
+        #and auditors of the routed departments should have view permission to this feedback
+
         
         return response
 
