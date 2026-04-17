@@ -35,12 +35,12 @@ class Feedback(models.Model):
 
     def assign_to_responder(self, responder):
         """Assign this feedback to a responder."""
+        if not responder.groups.filter(name="Feedback Responders").exists():
+            raise ValueError("User must be in the 'Feedback Responders' group to be assigned as a responder.")
+        
         record, created = FeedbackResponderRecord.objects.get_or_create(
             feedback=self, responder=responder
         )
-        #assign view permission to the responder for this feedback
-        if created:
-            assign_many_perms(["feedback.view_feedback", "feedback.add_feedbackresponse", "feedback.change_feedbackresponse", "feedback.view_feedbackresponse"], responder, self)
         return record, created
     
     class Meta:
