@@ -200,7 +200,7 @@ class FeedbackResponseDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("feedback_list")
 
 
-class FeedbackResponseAssignView(LoginRequiredMixin,PermissionRequiredMixin, View):
+class FeedbackResponseAssignView(LoginRequiredMixin, PermissionRequiredMixin, View):
     form_class = FeedbackResponseAssignForm
     template_name = "feedback/feedback_assign_form.html"
     permission_required = "feedback.assign_feedback"
@@ -227,8 +227,15 @@ class FeedbackResponseAssignView(LoginRequiredMixin,PermissionRequiredMixin, Vie
         )
         if form.is_valid():
             responder = form.cleaned_data["responder"]
-            self.feedback.assign_to_responder(responder)
-            sync_feedback_view_permissions(self.feedback)
+            try:
+                self.feedback.assign_to_responder(responder)
+            except ValueError as e:
+                form.add_error(None, str(e))
+                return render(
+                    request,
+                    self.template_name,
+                    {"form": form, "feedback": self.feedback},
+                )
             return redirect("feedback_response_list", pk=self.feedback.pk)
 
         return render(
