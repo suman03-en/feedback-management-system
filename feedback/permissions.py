@@ -9,56 +9,10 @@ if TYPE_CHECKING:
 
 
 def _guardian_shortcuts():
+    """Helper function to import Guardian shortcuts only when needed.
+    This avoids circular import issues since some permission functions are used in models.py
+    """
     return import_module("guardian.shortcuts")
-
-
-def sync_feedback_view_permissions(feedback: "Feedback") -> None:
-    """Synchronize object-level view permission for one feedback item."""
-    shortcuts = _guardian_shortcuts()
-    assign_perm = shortcuts.assign_perm
-    from .models import FeedbackResponderRecord
-
-    # Creator always keeps access to their own feedback.
-    assign_perm("feedback.view_feedback", feedback.creator, feedback)
-
-    # Assigned responders can access feedback they are working on.
-    assigned_responder_ids = FeedbackResponderRecord.objects.filter(
-        feedback=feedback
-    ).values_list("responder_id", flat=True)
-    User = get_user_model()
-    responders = User.objects.filter(id__in=assigned_responder_ids, is_active=True)
-    for responder in responders:
-        assign_perm("feedback.view_feedback", responder, feedback)
-
-    # Department managers of the routed departments can access this feedback.
-    manager_users = User.objects.filter(
-        is_active=True,
-        groups__name="Department Manager",
-        department__in=feedback.to_departments.all(),
-    ).distinct()
-    for manager in manager_users:
-        assign_perm("feedback.view_feedback", manager, feedback)
-
-
-def get_feedback_queryset_for_user(user, base_queryset: QuerySet | None = None):
-    """Return the feedback queryset visible to a user using Guardian object perms."""
-    from .models import Feedback
-
-    queryset = base_queryset or Feedback.objects.all()
-
-    if user.is_superuser:
-        return queryset
-
-    get_objects_for_user = _guardian_shortcuts().get_objects_for_user
-    return get_objects_for_user(
-        user,
-        "feedback.view_feedback",
-        klass=queryset,
-        use_groups=True,
-        any_perm=False,
-        accept_global_perms=False,
-        with_superuser=False,
-    )
 
 def assign_many_perms(perms, user, obj):
     """Assign multiple permissions to a user for a specific object."""
@@ -88,4 +42,20 @@ def assign_owner_perms(user, obj, perms=None):
     ]
 
     assign_many_perms(default_perms, user, obj)
+
+def assign_department_permissions(feedback):
+    # get all routed departments for this object, can be feedback or feedback response
+    shortcuts = _guardian_shortcuts()
+    assign_perm = shortcuts.assign_perm
+
+    departments = feedback.to_departments.all()
+
+    for department in departments:
+        #assign view permission to the managers of  the routed departments
+        for manager in department.managers.all():
+            assign_perm("feedback.view_feedback", manager, feedback)
+
+        #assign view permission to the auditors of  the routed departments
+        for auditor in department.auditors.all():
+            assign_perm("feedback.view_feedback", auditor, feedback)
 
