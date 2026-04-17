@@ -1,6 +1,7 @@
 from django import forms
 from .models import Feedback, FeedbackResponse, Department
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 
 # Get the User model
 User = get_user_model()
@@ -58,6 +59,9 @@ class FeedbackResponseAssignForm(forms.Form):
     """Form for assigning feedback to a responder."""
 
     responder = forms.ModelChoiceField(
-        queryset=User.objects.filter(is_active=True),
+        queryset=User.objects.filter(
+            is_active=True,
+            groups__name="Responder"
+            ).distinct(),
         label="Assign to",
     )
