@@ -9,6 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.core.exceptions import PermissionDenied
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import Http404
 from django.urls import reverse_lazy, reverse
 
 from guardian.shortcuts import get_objects_for_user, assign_perm # type: ignore
@@ -96,8 +97,6 @@ class FeedbackCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         return response
     
         
-
-
 class FeedbackDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Feedback
     template_name = "feedback/feedback_confirm_delete.html"
@@ -121,24 +120,42 @@ class FeedbackResponseCreateView(LoginRequiredMixin, PermissionRequiredMixin, Cr
     success_url = reverse_lazy("feedback_list")
     permission_required = ["feedback.add_feedbackresponse"]
 
+    feedback = None
+
     def get_feedback(self):
         """Helper method to retrieve the associated feedback based on the URL parameter."""
-        return Feedback.objects.get(id=self.kwargs.get("pk"))
+        try:
+            self.feedback = Feedback.objects.get(id=self.kwargs.get("pk"))
+        except Feedback.DoesNotExist:
+            raise Http404("Feedback not found")
+
+    def dispatch(self, request, *args, **kwargs):
+        #load the feedback object before processing the request, so it's available for permission checks and form initialization
+        self.get_feedback()
+        return super().dispatch(request, *args, **kwargs)  
 
     def get_context_data(self, **kwargs):
+        # Context for template, include the feedback object for display
         context = super().get_context_data(**kwargs)
         context["feedback"] = self.feedback
         return context
 
     def get_form_kwargs(self):
+        # Pass context to form
         kwargs = super().get_form_kwargs()
+        print("Feedback in form kwargs:", self.feedback)
         kwargs["feedback"] = self.feedback
         return kwargs
 
     def form_valid(self, form):
         form.instance.responder.add(self.request.user)
-        return redirect(self.get_success_url())
+        response = super().form_valid(form)
 
+        assign_owner_perms(self.request.user, self.object)
+        assign_department_permissions(self.object)
+
+        return response
+    
 
 class FeedbackResponseListView(LoginRequiredMixin, FeedbackMixin, ListView):
     model = FeedbackResponse

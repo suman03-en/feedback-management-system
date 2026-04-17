@@ -37,7 +37,7 @@ class FeedbackResponseForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.feedback = feedback
 
-    def save(self, commit=True, responder=None):
+    def save(self, commit=True):
         instance = super().save(commit=False)
         instance.feedback = self.feedback
 
@@ -50,8 +50,7 @@ class FeedbackResponseForm(forms.ModelForm):
 
         if commit:
             instance.save()
-            if responder is not None:
-                instance.responder.add(responder)
+            
         return instance
 
 
