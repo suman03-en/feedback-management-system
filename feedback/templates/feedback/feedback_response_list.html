@@ -16,11 +16,13 @@ feedback.name }}{% endblock title %} {% block content %}
         href="{% url 'feedback_detail' feedback.pk %}"
         >Back to detail</a
       >
+      {% if perms.feedback.add_feedbackresponse %}
       <a
         class="button button-primary"
         href="{% url 'feedback_response_create' feedback.pk %}"
         >Add response</a
       >
+      {% endif %}
     </div>
   </div>
 </section>
@@ -31,16 +33,20 @@ feedback.name }}{% endblock title %} {% block content %}
     <article class="response-card">
       <div class="response-card-header">
         <div>
+          {% if perms.feedback.change_feedbackresponse %}
           <a
             class="button-group"
             href="{% url 'feedback_response_edit' response.pk %}"
             >Edit</a
           >
+          {% endif %}
+          {% if perms.feedback.delete_feedbackresponse %}
           <a
             class="button-danger"
             href="{% url 'feedback_response_delete' response.pk %}"
             >Delete</a
           >
+          {% endif %}
           <p class="eyebrow">{{ response.created_at|date:"M d, Y" }}</p>
           <h3 class="card-title">{{ response.responder.all|join:", " }}</h3>
         </div>
@@ -50,7 +56,11 @@ feedback.name }}{% endblock title %} {% block content %}
     </article>
     {% empty %}
     <div class="empty-state">
+      {% if perms.feedback.add_feedbackresponse %}
       No responses yet. Add the first response to document the resolution path.
+      {% else %}
+      No responses yet.
+      {% endif %}
     </div>
     {% endfor %}
   </div>

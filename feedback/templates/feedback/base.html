@@ -23,7 +23,7 @@
         <div>
           <p class="eyebrow">Feedback management system</p>
           <h1>Feedback Hub</h1>
-          {% if request.user.is_staff %}
+          {% if perms.feedback.add_department %}
             <a class="button button-secondary" href="{% url 'department_create' %}">Add Department</a>
           {% endif %}
           <form action="{% url "user_logout" %}" method="post" style="display: inline;">
@@ -37,9 +37,11 @@
 
           </div>
         </div>
+        {% if perms.feedback.add_feedback %}
         <a class="button button-primary" href="{% url 'feedback_create' %}"
           >New feedback</a
         >
+        {% endif %}
       </header>
 
       <main class="content-grid">

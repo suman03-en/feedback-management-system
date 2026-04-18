@@ -13,8 +13,9 @@ Feedback Details{% endblock title %} {% block content %}
       </div>
       <span class="badge badge-{{ feedback.status }}">{{ feedback.status }}</span>
 
-      {% if can_assign_feedback %} 
-      {% include "feedback/feedback_assign_form.html" with feedback=feedback %} {% endif %}
+      {% if perms.feedback.assign_feedback %}
+      {% include "feedback/feedback_assign_form.html" with feedback=feedback form=assign_form %}
+      {% endif %}
     </div>
 
     <p class="detail-lead">{{ feedback.message }}</p>
@@ -43,18 +44,24 @@ Feedback Details{% endblock title %} {% block content %}
     </div>
 
     <div class="actions">
+      {% if perms.feedback.add_feedbackresponse %}
       <a
         class="button button-primary"
         href="{% url 'feedback_response_create' feedback.pk %}"
         >Respond</a>
+      {% endif %}
+      {% if perms.feedback.view_feedbackresponse %}
       <a
         class="button button-secondary"
         href="{% url 'feedback_response_list' feedback.pk %}"
         >View responses</a>
+      {% endif %}
+      {% if perms.feedback.delete_feedback %}
       <a
         class="button button-danger"
         href="{% url 'feedback_delete' feedback.pk %}"
         >Delete</a>
+      {% endif %}
     </div>
   </article>
 

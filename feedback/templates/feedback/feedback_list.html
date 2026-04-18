@@ -9,11 +9,13 @@
         through review faster.
       </p>
     </div>
+    {% if perms.feedback.add_feedback %}
     <div class="button-group">
       <a class="button button-primary" href="{% url 'feedback_create' %}"
         >Create feedback</a
       >
     </div>
+    {% endif %}
   </div>
 
   <div class="stat-grid">

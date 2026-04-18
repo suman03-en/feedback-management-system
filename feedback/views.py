@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import Http404
 from django.urls import reverse_lazy, reverse
 
-from guardian.shortcuts import get_objects_for_user, assign_perm # type: ignore
+from guardian.shortcuts import get_objects_for_user, assign_perm  # type: ignore
 
 from .models import (
     Feedback,
@@ -30,7 +30,7 @@ from .permissions import (
     assign_department_permissions,
     assign_owner_perms,
     assign_permission_creator_of_feedback_to_response,
-)   
+)
 
 
 class FeedbackListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -47,13 +47,12 @@ class FeedbackListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             with_superuser=True,
             accept_global_perms=False,
         )
-    
+
     def get(self, request, *args, **kwargs):
         if not request.user.has_perm("feedback.view_feedback"):
             raise PermissionDenied("You do not have permission to view feedback.")
 
         return super().get(request, *args, **kwargs)
-    
 
 
 class FeedbackDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -62,19 +61,16 @@ class FeedbackDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView
     context_object_name = "feedback"
     permission_required = ["feedback.view_feedback"]
 
-    def get_object(self, queryset=None): 
+    def get_object(self, queryset=None):
         obj = super().get_object(queryset)
         if not self.request.user.has_perm("feedback.view_feedback", obj):
             raise PermissionDenied
-        
+
         return obj
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        #if user is superuser or has assign permission, show the assign form
-        context["can_assign_feedback"] = self.request.user.has_perm("feedback.assign_feedback")
-        if context["can_assign_feedback"]:
-            context["assign_form"] = FeedbackResponseAssignForm()
+        context["assign_form"] = FeedbackResponseAssignForm()
         return context
 
 
@@ -96,14 +92,13 @@ class FeedbackCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView
         assign_department_permissions(feedback=self.object)
 
         return response
-    
-        
+
+
 class FeedbackDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Feedback
     template_name = "feedback/feedback_confirm_delete.html"
     success_url = reverse_lazy("feedback_list")
     permission_required = ["feedback.delete_feedback"]
-
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset)
@@ -112,9 +107,11 @@ class FeedbackDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView
             raise PermissionDenied
 
         return obj
-    
 
-class FeedbackResponseCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+
+class FeedbackResponseCreateView(
+    LoginRequiredMixin, PermissionRequiredMixin, CreateView
+):
     model = FeedbackResponse
     template_name = "feedback/feedback_response_form.html"
     form_class = FeedbackResponseForm
@@ -131,9 +128,9 @@ class FeedbackResponseCreateView(LoginRequiredMixin, PermissionRequiredMixin, Cr
             raise Http404("Feedback not found")
 
     def dispatch(self, request, *args, **kwargs):
-        #load the feedback object before processing the request, so it's available for permission checks and form initialization
+        # load the feedback object before processing the request, so it's available for permission checks and form initialization
         self.get_feedback()
-        return super().dispatch(request, *args, **kwargs)  
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         # Context for template, include the feedback object for display
@@ -152,13 +149,15 @@ class FeedbackResponseCreateView(LoginRequiredMixin, PermissionRequiredMixin, Cr
         form.instance.responder.add(self.request.user)
 
         assign_owner_perms(self.request.user, self.object)
-        assign_department_permissions(response==self.object)
+        assign_department_permissions(response == self.object)
         assign_permission_creator_of_feedback_to_response(self.object, self.feedback)
 
         return response
-    
 
-class FeedbackResponseListView(LoginRequiredMixin, PermissionRequiredMixin, FeedbackMixin, ListView):
+
+class FeedbackResponseListView(
+    LoginRequiredMixin, PermissionRequiredMixin, FeedbackMixin, ListView
+):
     model = FeedbackResponse
     template_name = "feedback/feedback_response_list.html"
     context_object_name = "responses"
@@ -197,7 +196,9 @@ class FeedbackResponseEditView(LoginRequiredMixin, PermissionRequiredMixin, Upda
         return reverse("feedback_response_list", kwargs={"pk": self.object.feedback.pk})
 
 
-class FeedbackResponseDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+class FeedbackResponseDeleteView(
+    LoginRequiredMixin, PermissionRequiredMixin, DeleteView
+):
     model = FeedbackResponse
     template_name = "feedback/feedback_response_confirm_delete.html"
     success_url = reverse_lazy("feedback_list")
