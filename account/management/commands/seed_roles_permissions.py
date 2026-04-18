@@ -8,6 +8,7 @@ ROLE_PERMISSIONS = {
         ("feedback", "feedback", "add_feedback"),
         ("feedback", "feedback", "change_feedback"),
         ("feedback", "feedback", "view_feedback"),
+        ("feedback", "feedbackresponse", "view_feedbackresponse"),
     ],
     "Responder": [
         ("feedback", "feedback", "view_feedback"),
@@ -31,6 +32,10 @@ ROLE_PERMISSIONS = {
         ("feedback", "feedbackresponse", "change_feedbackresponse"),
         ("feedback", "feedbackresponse", "view_feedbackresponse"),
         ("feedback", "feedbackresponse", "delete_feedbackresponse"),
+        ("feedback", "department", "add_department"), 
+        ("feedback", "department", "change_department"),
+        ("feedback", "department", "view_department"),
+        ("feedback", "department", "delete_department"),
         ("account", "user", "add_user"),
         ("account", "user", "change_user"),
         ("account", "user", "view_user"),

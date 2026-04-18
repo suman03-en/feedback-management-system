@@ -143,16 +143,16 @@ class FeedbackResponseCreateView(LoginRequiredMixin, PermissionRequiredMixin, Cr
     def get_form_kwargs(self):
         # Pass context to form
         kwargs = super().get_form_kwargs()
-        print("Feedback in form kwargs:", self.feedback)
         kwargs["feedback"] = self.feedback
         return kwargs
 
     def form_valid(self, form):
-        form.instance.responder.add(self.request.user)
         response = super().form_valid(form)
+        form.instance.responder.add(self.request.user)
 
         assign_owner_perms(self.request.user, self.object)
-        assign_department_permissions(self.object)
+        #it takes feedback and extract department from it
+        assign_department_permissions(self.object.feedback)
 
         return response
     
@@ -246,15 +246,9 @@ class FeedbackResponseAssignView(LoginRequiredMixin, PermissionRequiredMixin, Vi
 
 
 # additinal view to add the department , only allowed to superuser and staff user
-class DepartmentCreateView(LoginRequiredMixin, CreateView):
+class DepartmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Department
     template_name = "feedback/department_form.html"
     fields = ["name", "description"]
     success_url = reverse_lazy("feedback_list")
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return self.handle_no_permission()
-        if not (request.user.is_superuser or request.user.is_staff):
-            raise PermissionDenied("You do not have permission to add a department.")
-        return super().dispatch(request, *args, **kwargs)
+    permission_required = "feedback.add_department"
