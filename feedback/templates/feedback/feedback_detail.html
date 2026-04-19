@@ -59,8 +59,7 @@ Feedback Details{% endblock title %} {% block content %}
       {% if perms.feedback.delete_feedback %}
       <a
         class="button button-danger"
-        href="{% url 'feedback_delete' feedback.pk %}"
-        >Delete</a>
+        href="{% url 'feedback_delete' feedback.pk %}">Delete</a>
       {% endif %}
     </div>
   </article>
