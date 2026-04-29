@@ -165,12 +165,10 @@ Open in browser:
 
 - API endpoints are not implemented yet (despite earlier README claim)
 - Automated tests are not yet implemented in `account/tests.py` and `feedback/tests.py`
-- In response creation flow, department permission assignment call currently passes a boolean instead of `response=` keyword argument
 - Security and compliance hardening for production is not complete yet
 
 ## Suggested Next Milestones
 
-1. Fix current correctness issues (template field references, permission sync helper, response permission assignment call)
 2. Add feedback title/priority/category and list pagination/filtering
 3. Implement audit logging and compliance controls (retention, traceability)
 4. Add workflow enhancements (reassign, escalation, SLA tracking, bulk actions)
