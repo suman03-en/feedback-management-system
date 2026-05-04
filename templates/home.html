@@ -1,0 +1,673 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="FeedbackFlow helps teams capture feedback, route it to the right people, and track resolution from one place."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      rel="stylesheet"
+    />
+    <title>FeedbackFlow</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #07111f;
+        --bg-soft: #0d1c31;
+        --surface: rgba(10, 20, 36, 0.7);
+        --surface-strong: rgba(255, 255, 255, 0.96);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: #f8fbff;
+        --muted: rgba(232, 239, 247, 0.74);
+        --accent: #5eead4;
+        --accent-strong: #14b8a6;
+        --accent-soft: rgba(94, 234, 212, 0.12);
+        --secondary: #93c5fd;
+        --shadow: 0 28px 90px rgba(1, 8, 20, 0.42);
+        --radius-xl: 32px;
+        --radius-lg: 22px;
+        --radius-md: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Inter", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(94, 234, 212, 0.24), transparent 28%),
+          radial-gradient(circle at top right, rgba(59, 130, 246, 0.2), transparent 24%),
+          linear-gradient(180deg, #050b16 0%, #07111f 48%, #09182c 100%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 24px 0 40px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 22px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        background: rgba(7, 17, 31, 0.72);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand-mark {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        color: #04111a;
+        background: linear-gradient(135deg, #67e8f9, #34d399);
+        box-shadow: 0 12px 30px rgba(52, 211, 153, 0.26);
+      }
+
+      .brand-mark .material-symbols-outlined {
+        font-size: 24px;
+      }
+
+      .brand-copy {
+        display: grid;
+        gap: 2px;
+      }
+
+      .brand-name {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .brand-tagline {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .topbar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font: inherit;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease,
+          border-color 180ms ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        color: #05131c;
+        background: linear-gradient(135deg, #67e8f9 0%, #34d399 100%);
+        box-shadow: 0 16px 34px rgba(52, 211, 153, 0.22);
+      }
+
+      .btn-secondary {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 22px;
+        margin-top: 22px;
+      }
+
+      .hero-panel,
+      .stack-panel,
+      .feature-card,
+      .step-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-xl);
+        background: rgba(7, 17, 31, 0.72);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-panel {
+        padding: 34px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .hero-panel::before {
+        content: "";
+        position: absolute;
+        inset: auto -80px -120px auto;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(94, 234, 212, 0.18), transparent 68%);
+        pointer-events: none;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 16px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(94, 234, 212, 0.24);
+        color: var(--accent);
+        background: rgba(94, 234, 212, 0.08);
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .hero-title {
+        margin: 0;
+        max-width: 12ch;
+        font-size: clamp(2.8rem, 7vw, 5.6rem);
+        line-height: 0.95;
+        letter-spacing: -0.06em;
+      }
+
+      .hero-title span {
+        color: var(--accent);
+      }
+
+      .hero-copy {
+        margin: 18px 0 0;
+        max-width: 60ch;
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.75;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .stat-card {
+        padding: 18px;
+        border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      .stat-value {
+        display: block;
+        font-size: 1.65rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+
+      .stat-label {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .stack-panel {
+        padding: 22px;
+        display: grid;
+        gap: 16px;
+      }
+
+      .stack-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .stack-title {
+        margin: 0;
+        font-size: 1.05rem;
+        letter-spacing: -0.03em;
+      }
+
+      .stack-pill {
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: rgba(59, 130, 246, 0.12);
+        color: #bfdbfe;
+        border: 1px solid rgba(96, 165, 250, 0.22);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .stack-block {
+        padding: 18px;
+        border-radius: var(--radius-lg);
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .stack-block h2,
+      .section-title {
+        margin: 0;
+        font-size: 1.15rem;
+        letter-spacing: -0.03em;
+      }
+
+      .stack-block p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .icon-list {
+        display: grid;
+        gap: 12px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .icon-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 0 0;
+        color: var(--muted);
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .icon-badge {
+        width: 36px;
+        height: 36px;
+        flex: none;
+        display: grid;
+        place-items: center;
+        border-radius: 12px;
+        color: var(--accent);
+        background: var(--accent-soft);
+      }
+
+      .icon-badge .material-symbols-outlined {
+        font-size: 20px;
+      }
+
+      .section {
+        margin-top: 22px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+
+      .section-lead {
+        margin: 6px 0 0;
+        color: var(--muted);
+        max-width: 62ch;
+        line-height: 1.7;
+      }
+
+      .feature-grid,
+      .step-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .feature-card,
+      .step-card {
+        padding: 22px;
+        background: rgba(7, 17, 31, 0.62);
+      }
+
+      .feature-icon,
+      .step-number {
+        width: 42px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        background: rgba(94, 234, 212, 0.12);
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      .feature-icon .material-symbols-outlined {
+        font-size: 22px;
+      }
+
+      .feature-card h3,
+      .step-card h3 {
+        margin: 16px 0 10px;
+        font-size: 1.08rem;
+        letter-spacing: -0.03em;
+      }
+
+      .feature-card p,
+      .step-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .footer-cta {
+        margin-top: 22px;
+        padding: 26px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        border: 1px solid rgba(94, 234, 212, 0.18);
+        border-radius: var(--radius-xl);
+        background: linear-gradient(135deg, rgba(20, 184, 166, 0.14), rgba(59, 130, 246, 0.12));
+      }
+
+      .footer-cta h2 {
+        margin: 0;
+        font-size: 1.45rem;
+        letter-spacing: -0.04em;
+      }
+
+      .footer-cta p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .footer-cta .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .logout-form {
+        display: inline;
+      }
+
+      @media (max-width: 960px) {
+        .hero,
+        .feature-grid,
+        .step-grid,
+        .footer-cta {
+          grid-template-columns: 1fr;
+          flex-direction: column;
+        }
+
+        .hero-stats {
+          grid-template-columns: 1fr;
+        }
+
+        .hero-title {
+          max-width: none;
+        }
+
+        .section-header,
+        .stack-header,
+        .topbar,
+        .footer-cta {
+          align-items: flex-start;
+        }
+
+        .footer-cta .actions {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .page-shell {
+          width: min(100%, calc(100% - 20px));
+          padding-top: 10px;
+        }
+
+        .topbar,
+        .hero-panel,
+        .stack-panel,
+        .feature-card,
+        .step-card,
+        .footer-cta {
+          border-radius: 22px;
+        }
+
+        .hero-panel,
+        .stack-panel,
+        .feature-card,
+        .step-card,
+        .footer-cta {
+          padding: 20px;
+        }
+
+        .topbar-actions,
+        .hero-actions {
+          width: 100%;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="{% url 'home' %}">
+          <span class="brand-mark"><span class="material-symbols-outlined">forum</span></span>
+          <span class="brand-copy">
+            <span class="brand-name">FeedbackFlow</span>
+            <span class="brand-tagline">Clarity for every request</span>
+          </span>
+        </a>
+
+        <div class="topbar-actions">
+          {% if is_authenticated %}
+            <a class="btn btn-secondary" href="{{ analytics_url }}">
+              <span class="material-symbols-outlined">insights</span>
+              Analytics
+            </a>
+            <a class="btn btn-primary" href="{{ dashboard_url }}">
+              <span class="material-symbols-outlined">inbox</span>
+              Dashboard
+            </a>
+            <form class="logout-form" action="{% url 'account:user_logout' %}" method="post">
+              {% csrf_token %}
+              <button class="btn btn-secondary" type="submit">Log out</button>
+            </form>
+          {% else %}
+            <a class="btn btn-secondary" href="{{ login_url }}">Sign in</a>
+            <a class="btn btn-primary" href="{{ register_url }}">Create account</a>
+          {% endif %}
+        </div>
+      </header>
+
+      <main>
+        <section class="hero">
+          <article class="hero-panel">
+            <p class="eyebrow">
+              <span class="material-symbols-outlined" style="font-size: 16px;">auto_awesome</span>
+              Feedback management made clean
+            </p>
+            <h1 class="hero-title">One place to <span>collect</span>, route, and resolve feedback.</h1>
+            <p class="hero-copy">
+              FeedbackFlow turns scattered requests into a clear operating system for your team.
+              Capture input, assign ownership, track progress, and keep every department aligned without manual chasing.
+            </p>
+
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="{{ primary_action_url }}">
+                <span class="material-symbols-outlined">arrow_forward</span>
+                {{ primary_action_label }}
+              </a>
+              <a class="btn btn-secondary" href="{{ secondary_action_url }}">
+                <span class="material-symbols-outlined">north_east</span>
+                {{ secondary_action_label }}
+              </a>
+            </div>
+
+            <div class="hero-stats">
+              {% for stat in hero_stats %}
+                <div class="stat-card">
+                  <span class="stat-value">{{ stat.value }}</span>
+                  <span class="stat-label">{{ stat.label }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          </article>
+
+          <aside class="stack-panel">
+            <div class="stack-header">
+              <h2 class="stack-title">What the platform handles</h2>
+              <span class="stack-pill">Live workflow</span>
+            </div>
+
+            <div class="stack-block">
+              <h2>Intake</h2>
+              <p>Users submit feedback through a structured form that keeps key details consistent.</p>
+            </div>
+
+            <div class="stack-block">
+              <h2>Routing</h2>
+              <p>Departments, managers, and auditors receive the right level of access to move things forward.</p>
+            </div>
+
+            <div class="stack-block">
+              <h2>Closure</h2>
+              <p>Responses, analytics, and notifications keep resolution visible until the loop is closed.</p>
+            </div>
+
+            <ul class="icon-list">
+              <li>
+                <span class="icon-badge"><span class="material-symbols-outlined">shield</span></span>
+                Role-aware access keeps each person inside their lane.
+              </li>
+              <li>
+                <span class="icon-badge"><span class="material-symbols-outlined">notifications</span></span>
+                Real-time notifications reduce the need for manual follow-up.
+              </li>
+              <li>
+                <span class="icon-badge"><span class="material-symbols-outlined">query_stats</span></span>
+                Analytics help teams spot bottlenecks before they spread.
+              </li>
+            </ul>
+          </aside>
+        </section>
+
+        <section class="section">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow" style="margin-bottom: 10px;">Features</p>
+              <h2 class="section-title">A clearer workflow for the people who own feedback</h2>
+              <p class="section-lead">
+                The landing page is meant to explain the product quickly and give each visitor a single next step.
+              </p>
+            </div>
+          </div>
+
+          <div class="feature-grid">
+            {% for feature in feature_cards %}
+              <article class="feature-card">
+                <div class="feature-icon"><span class="material-symbols-outlined">{{ feature.icon }}</span></div>
+                <h3>{{ feature.title }}</h3>
+                <p>{{ feature.description }}</p>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow" style="margin-bottom: 10px;">How it works</p>
+              <h2 class="section-title">A simple path from submission to resolution</h2>
+            </div>
+          </div>
+
+          <div class="step-grid">
+            {% for step in workflow_steps %}
+              <article class="step-card">
+                <div class="step-number">0{{ forloop.counter }}</div>
+                <h3>{{ step }}</h3>
+                <p>
+                  This keeps the process predictable for both requesters and responders.
+                </p>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+
+        <section class="footer-cta">
+          <div>
+            <h2>{% if is_authenticated %}Jump straight into your queue.{% else %}Ready to bring structure to feedback?{% endif %}</h2>
+            <p>
+              {% if is_authenticated %}
+                Open the dashboard to review feedback, respond faster, and see what needs attention now.
+              {% else %}
+                Sign in to access the dashboard, or create an account to start routing requests right away.
+              {% endif %}
+            </p>
+          </div>
+          <div class="actions">
+            <a class="btn btn-secondary" href="{{ secondary_action_url }}">{{ secondary_action_label }}</a>
+            <a class="btn btn-primary" href="{{ primary_action_url }}">{{ primary_action_label }}</a>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
